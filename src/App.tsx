@@ -1,35 +1,121 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react';
+import './App.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight, faArrowLeft, faX } from '@fortawesome/free-solid-svg-icons';
 
 function App() {
-  const [count, setCount] = useState(0)
+    const images = ['test'];
+    const breakpointMidScreen = 768;
+    const breakpointLargeScreen = 1024;
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    const [width, setWidth] = useState(0);
+    const [selectedImage, setSelectedImage] = useState('');
+
+    const handleWindowResize = () => setWidth(window.innerWidth);
+
+    useEffect(() => {
+        handleWindowResize();
+        window.addEventListener("resize", handleWindowResize);
+        window.addEventListener("keydown", handleKeyDown);
+
+        // Return a function from the effect that removes the event listener
+        return () => {
+            window.removeEventListener("resize", handleWindowResize);
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
+
+    const handlePreviousImage = () => {
+        setSelectedImage((prevSelectedImage) => {
+            const prevSelectedImageIndex = images.indexOf(prevSelectedImage);
+            if (prevSelectedImageIndex - 1 < 0) return prevSelectedImage;
+            return images[prevSelectedImageIndex - 1];
+        });
+    };
+
+    const handleNextImage = () => {
+        setSelectedImage((prevSelectedImage) => {
+            const prevSelectedImageIndex = images.indexOf(prevSelectedImage);
+            if (prevSelectedImageIndex === images.length - 1) return prevSelectedImage;
+            return images[prevSelectedImageIndex + 1];
+        });
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+        console.log(event.key);
+        if (event.key === "ArrowRight") {
+            handleNextImage();
+        } else if (event.key === "ArrowLeft") {
+            handlePreviousImage();
+        } else if (event.key === "Escape") {
+            setSelectedImage('');
+        }
+    };
+
+    return (
+        <div className="grid max-w-6xl grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 ">
+            {width < breakpointMidScreen &&
+                <>
+                    {images.map((image, index) => <img key={index} className="cursor-pointer" onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
+                </>
+            }
+
+            {(width >= breakpointMidScreen && width <= breakpointLargeScreen) &&
+                <>
+                    <div className="grid gap-5">
+                        {images.slice(0, images.length / 2).map((image, index) => <img key={index} className="cursor-pointer" onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
+                    </div>
+                    <div className="grid gap-5">
+                        {images.slice(images.length / 2, images.length).map((image, index) => <img key={index} className="cursor-pointer" onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
+                    </div>
+                </>
+            }
+
+            {width > breakpointLargeScreen &&
+                <>
+                    <div className="grid gap-5">
+                        {images.slice(0, images.length / 3).map((image, index) => <img key={index} className="cursor-pointer" onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
+                    </div>
+                    <div className="grid gap-5">
+                        {images.slice(images.length / 3, images.length / 1.5).map((image, index) => <img key={index} className="cursor-pointer" onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
+
+                    </div>
+                    <div className="grid gap-5">
+                        {images.slice(images.length / 1.5, images.length).map((image, index) => <img key={index} className="cursor-pointer" onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
+                    </div>
+                </>
+            }
+
+            {selectedImage &&
+                <div className="fixed inset-0 top-0 left-0 z-50 flex flex-col items-center w-full bg-black bg-opacity-90">
+                    <div className="flex items-center justify-between w-full p-6">
+                        <span className="flex-1 ml-10 text-2xl text-center md:ml-8">
+                            {images.indexOf(selectedImage) + 1}/{images.length}
+                        </span>
+                        <FontAwesomeIcon
+                            icon={faX}
+                            className="ml-auto text-3xl cursor-pointer"
+                            onClick={() => setSelectedImage('')}
+                        />
+                    </div>
+
+                    <div className="flex items-center justify-center w-full h-full gap-6 lg:gap-52 xl:gap-80">
+                        <FontAwesomeIcon
+                            icon={faArrowLeft}
+                            className="text-4xl cursor-pointer"
+                            onClick={handlePreviousImage}
+                        />
+                        <img src={`/${selectedImage}.jpg`} alt={selectedImage} className="object-contain h-full md:w-full w-60 sm:w-96 lg:max-w-lg md:max-w-md" />
+                        <FontAwesomeIcon
+                            icon={faArrowRight}
+                            className="text-4xl cursor-pointer"
+                            onClick={handleNextImage}
+                        />
+                    </div>
+                </div>
+            }
+        </div>
+    );
 }
 
-export default App
+export default App;
