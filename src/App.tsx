@@ -4,7 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faArrowLeft, faX } from '@fortawesome/free-solid-svg-icons';
 
 function App() {
-    const images = ['test'];
+    const images = ['beach-with-palms', 'beach-with-palms2', 'beach', 'bmw-m2', 'audi-r8', 'mercedes-gt', 'bmw-m2',
+        'forest-fog', 'forest-green', 'forest-lake', 'classy-watch', 'rolex', 'smart-watch', 'tissot-watch'];
     const breakpointMidScreen = 768;
     const breakpointLargeScreen = 1024;
 
@@ -53,7 +54,7 @@ function App() {
     };
 
     return (
-        <div className="grid max-w-6xl grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 ">
+        <div className='gallery'>
             {width < breakpointMidScreen &&
                 <>
                     {images.map((image, index) => <img key={index} className="cursor-pointer" onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
@@ -62,26 +63,26 @@ function App() {
 
             {(width >= breakpointMidScreen && width <= breakpointLargeScreen) &&
                 <>
-                    <div className="grid gap-5">
-                        {images.slice(0, images.length / 2).map((image, index) => <img key={index} className="cursor-pointer" onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
+                    <div className='gallery__first-column'>
+                        {images.slice(0, images.length / 2).map((image, index) => <img key={index} className='gallery__image' onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
                     </div>
-                    <div className="grid gap-5">
-                        {images.slice(images.length / 2, images.length).map((image, index) => <img key={index} className="cursor-pointer" onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
+                    <div className="gallery__second-column">
+                        {images.slice(images.length / 2, images.length).map((image, index) => <img key={index} className='gallery__image' onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
                     </div>
                 </>
             }
 
             {width > breakpointLargeScreen &&
                 <>
-                    <div className="grid gap-5">
-                        {images.slice(0, images.length / 3).map((image, index) => <img key={index} className="cursor-pointer" onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
+                    <div className='gallery__first-column'>
+                        {images.slice(0, images.length / 3).map((image, index) => <img key={index} className='gallery__image' onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
                     </div>
-                    <div className="grid gap-5">
-                        {images.slice(images.length / 3, images.length / 1.5).map((image, index) => <img key={index} className="cursor-pointer" onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
+                    <div className='gallery__second-column'>
+                        {images.slice(images.length / 3, images.length / 1.5).map((image, index) => <img key={index} className='gallery__image' onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
 
                     </div>
-                    <div className="grid gap-5">
-                        {images.slice(images.length / 1.5, images.length).map((image, index) => <img key={index} className="cursor-pointer" onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
+                    <div className='gallery__third-column'>
+                        {images.slice(images.length / 1.5, images.length).map((image, index) => <img key={index} className='gallery__image' onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
                     </div>
                 </>
             }
