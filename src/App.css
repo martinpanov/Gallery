@@ -34,12 +34,18 @@
     .gallery__image {
         height: 100%;
         object-fit: cover;
-        transition: all 200ms ease-in;
+        transition: all 100ms ease-out;
         cursor: pointer;
+        opacity: 0;
+        transition: all 1s;
     }
 
     .gallery__image:hover {
         transform: scale(0.9);
         border-radius: 1rem;
+    }
+
+    .active {
+        opacity: 1;
     }
 }
