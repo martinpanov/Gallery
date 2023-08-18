@@ -6,56 +6,68 @@ import { faArrowRight, faArrowLeft, faX } from '@fortawesome/free-solid-svg-icon
 function App() {
     const images = ['beach-with-palms', 'beach-with-palms2', 'beach', 'bmw-m2', 'audi-r8', 'mercedes-gt', 'bmw-m2',
         'forest-fog', 'forest-green', 'forest-lake', 'classy-watch', 'rolex', 'smart-watch', 'tissot-watch'];
-    const breakpointMidScreen = 768;
-    const breakpointLargeScreen = 1024;
+
+    const [screenSize, setScreenSize] = useState('large');
 
 
-    const [width, setWidth] = useState(0);
     const [selectedImage, setSelectedImage] = useState('');
     const [visibleImages, setVisibleImages] = useState<number[]>([]);
 
     const imagesRef = useRef<(HTMLImageElement | null)[]>([]);
 
-    const handleWindowResize = () => setWidth(window.innerWidth);
 
     useEffect(() => {
-        handleWindowResize();
-        window.addEventListener("resize", handleWindowResize);
+        handleResize();
+        window.addEventListener("resize", handleResize);
         window.addEventListener("keydown", handleKeyDown);
 
         // Return a function from the effect that removes the event listener
         return () => {
-            window.removeEventListener("resize", handleWindowResize);
+            window.removeEventListener("resize", handleResize);
             window.removeEventListener("keydown", handleKeyDown);
         };
     }, []);
 
     useEffect(() => {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const imageIndex = parseInt(entry.target.getAttribute('data-index') || '0', 10);
-                    if (!visibleImages.includes(imageIndex)) {
-                        setVisibleImages(prevVisibleImages => [...prevVisibleImages, imageIndex]);
+        setTimeout(() => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    console.log(entry.target, entry.isIntersecting);
+                    if (entry.isIntersecting) {
+                        const imageIndex = parseInt(entry.target.getAttribute('data-index') || '0', 10);
+                        if (!visibleImages.includes(imageIndex)) {
+                            setVisibleImages(prevVisibleImages => [...prevVisibleImages, imageIndex]);
+                        }
                     }
-                }
-            });
-        });
+                });
+            }, { threshold: 0.32 });
 
-        imagesRef.current.forEach((ref) => {
-            if (ref) {
-                observer.observe(ref);
-            }
-        });
-
-        return () => {
             imagesRef.current.forEach((ref) => {
                 if (ref) {
-                    observer.unobserve(ref);
+                    observer.observe(ref);
                 }
             });
-        };
+
+            return () => {
+                imagesRef.current.forEach((ref) => {
+                    if (ref) {
+                        observer.unobserve(ref);
+                    }
+                });
+            };
+        }, 100);
     }, []);
+
+    const handleResize = () => {
+        const width = window.innerWidth;
+        if (width <= 768) {
+            setScreenSize('small');
+        } else if (width <= 1024) {
+            setScreenSize('medium');
+        } else {
+            setScreenSize('large');
+        }
+    };
 
     const handlePreviousImage = () => {
         setSelectedImage((prevSelectedImage) => {
@@ -74,7 +86,6 @@ function App() {
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
-        console.log(event.key);
         if (event.key === "ArrowRight") {
             handleNextImage();
         } else if (event.key === "ArrowLeft") {
@@ -86,24 +97,24 @@ function App() {
 
     return (
         <div className='gallery'>
-            {width < breakpointMidScreen &&
+            {screenSize === 'small' &&
                 <>
-                    {images.map((image, index) => <img key={index} className="cursor-pointer" onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
+                    {images.map((image, index) => <img key={index} className="cursor-pointer" onClick={() => setSelectedImage(image)} src={`/${image}.webp`} alt={image} />)}
                 </>
             }
 
-            {(width >= breakpointMidScreen && width <= breakpointLargeScreen) &&
+            {screenSize === 'medium' &&
                 <>
                     <div className='gallery__first-column'>
-                        {images.slice(0, images.length / 2).map((image, index) => <img key={index} className='gallery__image' onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
+                        {images.slice(0, images.length / 2).map((image, index) => <img key={index} className='gallery__image' onClick={() => setSelectedImage(image)} src={`/${image}.webp`} alt={image} />)}
                     </div>
                     <div className="gallery__second-column">
-                        {images.slice(images.length / 2, images.length).map((image, index) => <img key={index} className='gallery__image' onClick={() => setSelectedImage(image)} src={`/${image}.jpg`} alt={image} />)}
+                        {images.slice(images.length / 2, images.length).map((image, index) => <img key={index} className='gallery__image' onClick={() => setSelectedImage(image)} src={`/${image}.webp`} alt={image} />)}
                     </div>
                 </>
             }
 
-            {width > breakpointLargeScreen &&
+            {screenSize === 'large' &&
                 <>
                     <div className='gallery__first-column'>
                         {images.slice(0, images.length / 3).map((image, index) =>
@@ -113,7 +124,7 @@ function App() {
                                 data-index={index}
                                 ref={el => imagesRef.current[index] = el}
                                 onClick={() => setSelectedImage(image)}
-                                src={`/${image}.jpg`}
+                                src={`/${image}.webp`}
                                 alt={image}
                             />
                         )}
@@ -121,22 +132,22 @@ function App() {
                     <div className='gallery__second-column'>
                         {images.slice(images.length / 3, images.length / 1.5).map((image, index) => <img
                             key={index}
-                            className={`gallery__image ${visibleImages.includes(index) ? 'active' : ''}`}
-                            data-index={index}
-                            ref={el => imagesRef.current[index] = el}
+                            className={`gallery__image ${visibleImages.includes(index + 4) ? 'active' : ''}`}
+                            data-index={index + 4}
+                            ref={el => imagesRef.current[index + 4] = el}
                             onClick={() => setSelectedImage(image)}
-                            src={`/${image}.jpg`}
+                            src={`/${image}.webp`}
                             alt={image}
                         />)}
                     </div>
                     <div className='gallery__third-column'>
                         {images.slice(images.length / 1.5, images.length).map((image, index) => <img
                             key={index}
-                            className={`gallery__image ${visibleImages.includes(index) ? 'active' : ''}`}
-                            data-index={index}
-                            ref={el => imagesRef.current[index] = el}
+                            className={`gallery__image ${visibleImages.includes(index + 9) ? 'active' : ''}`}
+                            data-index={index + 9}
+                            ref={el => imagesRef.current[index + 9] = el}
                             onClick={() => setSelectedImage(image)}
-                            src={`/${image}.jpg`}
+                            src={`/${image}.webp`}
                             alt={image}
                         />)}
                     </div>
@@ -162,7 +173,7 @@ function App() {
                             className="text-4xl cursor-pointer"
                             onClick={handlePreviousImage}
                         />
-                        <img src={`/${selectedImage}.jpg`} alt={selectedImage} className="object-contain h-full md:w-full w-60 sm:w-96 lg:max-w-lg md:max-w-md" />
+                        <img src={`/${selectedImage}.webp`} alt={selectedImage} className="object-contain h-full md:w-full w-60 sm:w-96 lg:max-w-lg md:max-w-md" />
                         <FontAwesomeIcon
                             icon={faArrowRight}
                             className="text-4xl cursor-pointer"
