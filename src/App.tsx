@@ -13,6 +13,7 @@ function App() {
     const [selectedImage, setSelectedImage] = useState('');
     const [visibleImages, setVisibleImages] = useState<number[]>([]);
     const [isOpenFilterMenu, setIsOpenFilterMenu] = useState(false);
+    const [formData, setFormData] = useState({});
 
     const imagesRef = useRef<(HTMLImageElement | null)[]>([]);
 
@@ -96,6 +97,19 @@ function App() {
         setIsOpenFilterMenu(prevState => !prevState);
     };
 
+    const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+    };
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+        if (event.target.type === 'checkbox') {
+            return setFormData(prevState => ({ ...prevState, [name]: event.target.checked }));
+        }
+
+        setFormData(prevState => ({ ...prevState, [name]: value }));
+    };
+
     return (
         <>
             <header className='header'>
@@ -103,13 +117,13 @@ function App() {
                     <div className='header__logo-wrapper'>
                         <img className='header__logo' src="/logo.png" alt="logo" />
                     </div>
-                    <form className='header__form'>
+                    <form className='header__form' onSubmit={handleFormSubmit}>
                         <button className='header__form-buton'>
                             <FontAwesomeIcon
                                 icon={faMagnifyingGlass}
                             />
                         </button>
-                        <input className='header__input' type="text" />
+                        <input className='header__input' type='text' name='tag' onChange={handleChange} />
                         <FontAwesomeIcon
                             icon={faFilter}
                             className='header__filter'
@@ -119,19 +133,19 @@ function App() {
                             <div className='header__filter-menu'>
                                 <h3>Filter options</h3>
                                 <div>
-                                    <input type="checkbox" name="car" id="car" />
+                                    <input type="checkbox" name="car" id="car" onChange={handleChange} />
                                     <label htmlFor="car">Car</label>
                                 </div>
                                 <div>
-                                    <input type="checkbox" name="forest" id="forest" />
+                                    <input type="checkbox" name="forest" id="forest" onChange={handleChange} />
                                     <label htmlFor="car">Forest</label>
                                 </div>
                                 <div>
-                                    <input type="checkbox" name="beach" id="beach" />
+                                    <input type="checkbox" name="beach" id="beach" onChange={handleChange} />
                                     <label htmlFor="car">Beach</label>
                                 </div>
                                 <div>
-                                    <input type="checkbox" name="watch" id="watch" />
+                                    <input type="checkbox" name="watch" id="watch" onChange={handleChange} />
                                     <label htmlFor="car">Watch</label>
                                 </div>
                             </div>
