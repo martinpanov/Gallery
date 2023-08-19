@@ -1,8 +1,69 @@
+.header__nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0rem 0.25rem;
+}
+
+.header__logo-wrapper {
+    width: 4rem;
+    height: 4rem;
+}
+
+.header__logo {
+    width: 100%;
+    height: 100%;
+}
+
+.header__form {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid grey;
+    border-radius: 1.25rem;
+    width: 100%;
+    padding: 0.25rem 0rem;
+}
+
+.header__form-buton {
+    all: unset;
+    padding: 0rem 0.75rem;
+}
+
+.header__input {
+    width: 100%;
+    font-size: 1.25rem;
+    border: none;
+    outline: none;
+}
+
+.header__filter {
+    padding: 0rem 0.75rem;
+}
+
+.header__filter-menu {
+    position: absolute;
+    inset: 110% 0 auto auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 1.25rem;
+    border-radius: 0.25rem;
+    border: 1px solid grey;
+    padding: 1rem 1.25rem 1rem 1rem;
+    background-color: white;
+}
+
+.header__title {
+    text-align: center;
+    padding: 10rem 0rem;
+}
+
 .gallery {
     display: grid;
-    max-width: 1152px;
     gap: 1.25rem;
-    margin: 0 auto;
+    padding: 0rem 2rem;
 }
 
 @media (min-width: 768px) {
@@ -22,8 +83,25 @@
 }
 
 @media (min-width: 1024px) {
+    .header__nav {
+        gap: 1rem;
+        padding: 0rem;
+    }
+    
+    .header__logo-wrapper {
+        width: 5rem;
+        height: 5rem;
+    }
+
+    .header__form {
+        max-width: calc(1320px - 4rem);
+    }
+
     .gallery {
         grid-template-columns: repeat(3, 1fr);
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 0rem;
     }
 
     .gallery__first-column, .gallery__second-column, .gallery__third-column{
@@ -35,6 +113,7 @@
     .gallery__image {
         height: 100%;
         object-fit: cover;
+        min-height: 350px;
         transition: all 100ms ease-out;
         cursor: pointer;
         opacity: 0;
