@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import './App.css';
+import './variables.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faArrowLeft, faX, faMagnifyingGlass, faFilter } from '@fortawesome/free-solid-svg-icons';
 
 function App() {
-    const images = ['beach-with-palms', 'beach-with-palms2', 'beach', 'bmw-m2', 'audi-r8', 'mercedes-gt', 'bmw-m2',
+    const images = ['beach-with-palms', 'beach-with-palms2', 'beach', 'bmw-m2', 'audi-r8', 'mercedes-gt',
         'forest-fog', 'forest-green', 'forest-lake', 'classy-watch', 'rolex', 'smart-watch', 'tissot-watch'];
 
     const [screenSize, setScreenSize] = useState('large');
@@ -14,6 +15,7 @@ function App() {
     const [visibleImages, setVisibleImages] = useState<number[]>([]);
     const [isOpenFilterMenu, setIsOpenFilterMenu] = useState(false);
     const [formData, setFormData] = useState({});
+    const [isInputFocused, setisInputFocused] = useState(false);
 
     const imagesRef = useRef<(HTMLImageElement | null)[]>([]);
 
@@ -31,6 +33,8 @@ function App() {
 
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
+            console.log(entries);
+
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const imageIndex = parseInt(entry.target.getAttribute('data-index') || '0', 10);
@@ -54,13 +58,13 @@ function App() {
                 }
             });
         };
-    }, []);
+    }, [screenSize]);
 
     const handleResize = () => {
         const width = window.innerWidth;
-        if (width <= 768) {
+        if (width < 768) {
             setScreenSize('small');
-        } else if (width <= 1024) {
+        } else if (width < 1024) {
             setScreenSize('medium');
         } else {
             setScreenSize('large');
@@ -117,18 +121,28 @@ function App() {
                     <div className='header__logo-wrapper'>
                         <img className='header__logo' src="/logo.png" alt="logo" />
                     </div>
-                    <form className='header__form' onSubmit={handleFormSubmit}>
-                        <button className='header__form-buton'>
+                    <form className={`header__form ${isInputFocused ? 'active' : ''}`} onSubmit={handleFormSubmit}>
+                        <button className='header__form-buton button--default--styles'>
                             <FontAwesomeIcon
                                 icon={faMagnifyingGlass}
                             />
                         </button>
-                        <input className='header__input' type='text' name='tag' onChange={handleChange} />
-                        <FontAwesomeIcon
-                            icon={faFilter}
-                            className='header__filter'
-                            onClick={() => openFilterMenu()}
+                        <input
+                            className={`header__input ${isInputFocused ? 'active' : ''}`}
+                            type='text'
+                            name='tag'
+                            placeholder='Tags'
+                            onChange={handleChange}
+                            onClick={() => setisInputFocused(true)}
+                            onBlur={() => setisInputFocused(false)}
                         />
+                        <button className='header__filter button--default--styles'>
+                            <FontAwesomeIcon
+                                icon={faFilter}
+                                className='header__filter'
+                                onClick={() => openFilterMenu()}
+                            />
+                        </button>
                         {isOpenFilterMenu &&
                             <div className='header__filter-menu'>
                                 <h3>Filter options</h3>
@@ -138,15 +152,15 @@ function App() {
                                 </div>
                                 <div>
                                     <input type="checkbox" name="forest" id="forest" onChange={handleChange} />
-                                    <label htmlFor="car">Forest</label>
+                                    <label htmlFor="forest">Forest</label>
                                 </div>
                                 <div>
                                     <input type="checkbox" name="beach" id="beach" onChange={handleChange} />
-                                    <label htmlFor="car">Beach</label>
+                                    <label htmlFor="beach">Beach</label>
                                 </div>
                                 <div>
                                     <input type="checkbox" name="watch" id="watch" onChange={handleChange} />
-                                    <label htmlFor="car">Watch</label>
+                                    <label htmlFor="watch">Watch</label>
                                 </div>
                             </div>
                         }
@@ -160,18 +174,48 @@ function App() {
             <main>
                 <section className='gallery'>
                     {screenSize === 'small' &&
-                        <>
-                            {images.map((image, index) => <img key={index} className="cursor-pointer" onClick={() => setSelectedImage(image)} src={`/${image}.webp`} alt={image} />)}
-                        </>
+                        <div className='gallery__first-column'>
+                            {images.map((image, index) =>
+                                <img
+                                    key={index}
+                                    className={`gallery__image ${visibleImages.includes(index) ? 'active' : ''}`}
+                                    data-index={index}
+                                    ref={el => imagesRef.current[index] = el}
+                                    onClick={() => setSelectedImage(image)}
+                                    src={`/${image}.webp`}
+                                    alt={image}
+                                />
+                            )}
+                        </div>
                     }
 
                     {screenSize === 'medium' &&
                         <>
                             <div className='gallery__first-column'>
-                                {images.slice(0, images.length / 2).map((image, index) => <img key={index} className='gallery__image' onClick={() => setSelectedImage(image)} src={`/${image}.webp`} alt={image} />)}
+                                {images.slice(0, images.length / 2).map((image, index) =>
+                                    <img
+                                        key={index}
+                                        className={`gallery__image ${visibleImages.includes(index) ? 'active' : ''}`}
+                                        data-index={index}
+                                        ref={el => imagesRef.current[index] = el}
+                                        onClick={() => setSelectedImage(image)}
+                                        src={`/${image}.webp`}
+                                        alt={image}
+                                    />
+                                )}
                             </div>
                             <div className="gallery__second-column">
-                                {images.slice(images.length / 2, images.length).map((image, index) => <img key={index} className='gallery__image' onClick={() => setSelectedImage(image)} src={`/${image}.webp`} alt={image} />)}
+                                {images.slice(images.length / 2, images.length).map((image, index) =>
+                                    <img
+                                        key={index + 7}
+                                        className={`gallery__image ${visibleImages.includes(index + 7) ? 'active' : ''}`}
+                                        data-index={index + 7}
+                                        ref={el => imagesRef.current[index + 7] = el}
+                                        onClick={() => setSelectedImage(image)}
+                                        src={`/${image}.webp`}
+                                        alt={image}
+                                    />
+                                )}
                             </div>
                         </>
                     }
@@ -193,7 +237,7 @@ function App() {
                             </div>
                             <div className='gallery__second-column'>
                                 {images.slice(images.length / 3, images.length / 1.5).map((image, index) => <img
-                                    key={index}
+                                    key={index + 4}
                                     className={`gallery__image ${visibleImages.includes(index + 4) ? 'active' : ''}`}
                                     data-index={index + 4}
                                     ref={el => imagesRef.current[index + 4] = el}
@@ -204,7 +248,7 @@ function App() {
                             </div>
                             <div className='gallery__third-column'>
                                 {images.slice(images.length / 1.5, images.length).map((image, index) => <img
-                                    key={index}
+                                    key={index + 9}
                                     className={`gallery__image ${visibleImages.includes(index + 9) ? 'active' : ''}`}
                                     data-index={index + 9}
                                     ref={el => imagesRef.current[index + 9] = el}
@@ -217,30 +261,23 @@ function App() {
                     }
 
                     {selectedImage &&
-                        <div className="fixed inset-0 top-0 left-0 z-50 flex flex-col items-center w-full bg-black bg-opacity-90">
-                            <div className="flex items-center justify-between w-full p-6">
-                                <span className="flex-1 ml-10 text-2xl text-center md:ml-8">
+                        <div className="gallery__lightbox">
+                            <div className="gallery__lightbox-navigation">
+                                <span className="gallery__lightbox-image-counter">
                                     {images.indexOf(selectedImage) + 1}/{images.length}
                                 </span>
-                                <FontAwesomeIcon
-                                    icon={faX}
-                                    className="ml-auto text-3xl cursor-pointer"
-                                    onClick={() => setSelectedImage('')}
-                                />
+                                <button className="gallery__lightbox-close button--default--styles" onClick={() => setSelectedImage('')}>
+                                    <FontAwesomeIcon icon={faX} />
+                                </button>
                             </div>
-
-                            <div className="flex items-center justify-center w-full h-full gap-6 lg:gap-52 xl:gap-80">
-                                <FontAwesomeIcon
-                                    icon={faArrowLeft}
-                                    className="text-4xl cursor-pointer"
-                                    onClick={handlePreviousImage}
-                                />
-                                <img src={`/${selectedImage}.webp`} alt={selectedImage} className="object-contain h-full md:w-full w-60 sm:w-96 lg:max-w-lg md:max-w-md" />
-                                <FontAwesomeIcon
-                                    icon={faArrowRight}
-                                    className="text-4xl cursor-pointer"
-                                    onClick={handleNextImage}
-                                />
+                            <div className="gallery__lightbox-main">
+                                <button className="gallery__lightbox-arrows gallery__lightbox-left-arrow button--default--styles" onClick={handlePreviousImage}>
+                                    <FontAwesomeIcon icon={faArrowLeft} />
+                                </button>
+                                <img src={`/${selectedImage}.webp`} alt={selectedImage} className="gallery__lightbox-image" />
+                                <button className="gallery__lightbox-arrows gallery__lightbox-right-arrow button--default--styles" onClick={handleNextImage}>
+                                    <FontAwesomeIcon icon={faArrowRight} />
+                                </button>
                             </div>
                         </div>
                     }
