@@ -10,12 +10,16 @@ function App() {
 
     const [screenSize, setScreenSize] = useState('large');
 
-
     const [selectedImage, setSelectedImage] = useState('');
     const [visibleImages, setVisibleImages] = useState<number[]>([]);
     const [isOpenFilterMenu, setIsOpenFilterMenu] = useState(false);
     const [formData, setFormData] = useState({});
     const [isInputFocused, setisInputFocused] = useState(false);
+    const [touchStart, setTouchStart] = useState<number | null>(null);
+    const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+    // the required distance between touchStart and touchEnd to be detected as a swipe
+    const minSwipeDistance = 50;
 
     const imagesRef = useRef<(HTMLImageElement | null)[]>([]);
 
@@ -33,8 +37,6 @@ function App() {
 
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
-            console.log(entries);
-
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const imageIndex = parseInt(entry.target.getAttribute('data-index') || '0', 10);
@@ -112,6 +114,24 @@ function App() {
         }
 
         setFormData(prevState => ({ ...prevState, [name]: value }));
+    };
+
+    const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+        setTouchEnd(null); // otherwise the swipe is fired even with usual touch events
+        setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const onTouchMove = (e: React.TouchEvent<HTMLDivElement>) => setTouchEnd(e.targetTouches[0].clientX);
+
+    const onTouchEnd = () => {
+        if (!touchStart || !touchEnd) return;
+
+        const distance = touchStart - touchEnd;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+
+        if (isLeftSwipe) handleNextImage();
+        if (isRightSwipe) handlePreviousImage();
     };
 
     return (
@@ -270,7 +290,13 @@ function App() {
                                     <FontAwesomeIcon icon={faX} />
                                 </button>
                             </div>
-                            <div className="gallery__lightbox-main">
+                            <div
+                                className="gallery__lightbox-main"
+                                draggable
+                                onTouchStart={onTouchStart}
+                                onTouchMove={onTouchMove}
+                                onTouchEnd={onTouchEnd}
+                            >
                                 <button className="gallery__lightbox-arrows gallery__lightbox-left-arrow button--default--styles" onClick={handlePreviousImage}>
                                     <FontAwesomeIcon icon={faArrowLeft} />
                                 </button>
