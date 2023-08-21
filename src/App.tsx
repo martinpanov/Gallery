@@ -4,13 +4,24 @@ import './variables.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faArrowLeft, faX, faMagnifyingGlass, faFilter } from '@fortawesome/free-solid-svg-icons';
 
+interface Images {
+    name: string;
+    tags: string[];
+}
+
 function App() {
-    const images = ['beach-with-palms', 'beach-with-palms2', 'beach', 'bmw-m2', 'audi-r8', 'mercedes-gt',
-        'forest-fog', 'forest-green', 'forest-lake', 'classy-watch', 'rolex', 'smart-watch', 'tissot-watch'];
+    const images: Images[] = [
+        { name: 'beach-with-palms', tags: ['beach', 'palms', 'water'] }, { name: 'beach-with-palms2', tags: ['beach', 'palms', 'sand'] },
+        { name: 'beach', tags: ['beach', 'sand', 'water'] }, { name: 'bmw-m2', tags: ['car', 'bmw', 'fast'] },
+        { name: 'audi-r8', tags: ['car', 'audi', 'sport'] }, { name: 'mercedes-gt', tags: ['car', 'mercedes', 'yellow'] },
+        { name: 'forest-fog', tags: ['trees', 'fog', 'beautiful'] }, { name: 'forest-green', tags: ['green', 'trees', 'grass'] },
+        { name: 'forest-lake', tags: ['lake', 'mountain', 'people'] }, { name: 'classy-watch', tags: ['suit', 'classy', 'rolex'] },
+        { name: 'rolex', tags: ['rolex', 'shiny', 'expensive'] }, { name: 'smart-watch', tags: ['smart', 'technology', 'apple'] },
+        { name: 'tissot-watch', tags: ['vintage', 'tissot', 'classy'] }];
 
     const [screenSize, setScreenSize] = useState('large');
 
-    const [selectedImage, setSelectedImage] = useState('');
+    const [selectedImage, setSelectedImage] = useState<Images>({ name: '', tags: [] });
     const [visibleImages, setVisibleImages] = useState<number[]>([]);
     const [isOpenFilterMenu, setIsOpenFilterMenu] = useState(false);
     const [formData, setFormData] = useState({});
@@ -75,7 +86,7 @@ function App() {
 
     const handlePreviousImage = () => {
         setSelectedImage((prevSelectedImage) => {
-            const prevSelectedImageIndex = images.indexOf(prevSelectedImage);
+            const prevSelectedImageIndex = images.findIndex(image => image.name === prevSelectedImage.name);
             if (prevSelectedImageIndex - 1 < 0) return prevSelectedImage;
             return images[prevSelectedImageIndex - 1];
         });
@@ -83,7 +94,7 @@ function App() {
 
     const handleNextImage = () => {
         setSelectedImage((prevSelectedImage) => {
-            const prevSelectedImageIndex = images.indexOf(prevSelectedImage);
+            const prevSelectedImageIndex = images.findIndex(image => image.name === prevSelectedImage.name);
             if (prevSelectedImageIndex === images.length - 1) return prevSelectedImage;
             return images[prevSelectedImageIndex + 1];
         });
@@ -95,7 +106,7 @@ function App() {
         } else if (event.key === "ArrowLeft") {
             handlePreviousImage();
         } else if (event.key === "Escape") {
-            setSelectedImage('');
+            setSelectedImage({ name: '', tags: [] });
         }
     };
 
@@ -104,6 +115,7 @@ function App() {
     };
 
     const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        console.log(formData);
         event.preventDefault();
     };
 
@@ -202,8 +214,8 @@ function App() {
                                     data-index={index}
                                     ref={el => imagesRef.current[index] = el}
                                     onClick={() => setSelectedImage(image)}
-                                    src={`/${image}.webp`}
-                                    alt={image}
+                                    src={`/${image.name}.webp`}
+                                    alt={image.name}
                                 />
                             )}
                         </div>
@@ -219,8 +231,8 @@ function App() {
                                         data-index={index}
                                         ref={el => imagesRef.current[index] = el}
                                         onClick={() => setSelectedImage(image)}
-                                        src={`/${image}.webp`}
-                                        alt={image}
+                                        src={`/${image.name}.webp`}
+                                        alt={image.name}
                                     />
                                 )}
                             </div>
@@ -232,8 +244,8 @@ function App() {
                                         data-index={index + 7}
                                         ref={el => imagesRef.current[index + 7] = el}
                                         onClick={() => setSelectedImage(image)}
-                                        src={`/${image}.webp`}
-                                        alt={image}
+                                        src={`/${image.name}.webp`}
+                                        alt={image.name}
                                     />
                                 )}
                             </div>
@@ -250,8 +262,8 @@ function App() {
                                         data-index={index}
                                         ref={el => imagesRef.current[index] = el}
                                         onClick={() => setSelectedImage(image)}
-                                        src={`/${image}-small.webp`}
-                                        alt={image}
+                                        src={`/${image.name}-small.webp`}
+                                        alt={image.name}
                                     />
                                 )}
                             </div>
@@ -262,8 +274,8 @@ function App() {
                                     data-index={index + 4}
                                     ref={el => imagesRef.current[index + 4] = el}
                                     onClick={() => setSelectedImage(image)}
-                                    src={`/${image}-small.webp`}
-                                    alt={image}
+                                    src={`/${image.name}-small.webp`}
+                                    alt={image.name}
                                 />)}
                             </div>
                             <div className='gallery__third-column'>
@@ -273,20 +285,20 @@ function App() {
                                     data-index={index + 9}
                                     ref={el => imagesRef.current[index + 9] = el}
                                     onClick={() => setSelectedImage(image)}
-                                    src={`/${image}-small.webp`}
-                                    alt={image}
+                                    src={`/${image.name}-small.webp`}
+                                    alt={image.name}
                                 />)}
                             </div>
                         </>
                     }
 
-                    {selectedImage &&
+                    {(selectedImage.name !== '' && selectedImage.tags.length > 0) &&
                         <div className="gallery__lightbox">
                             <div className="gallery__lightbox-navigation">
                                 <span className="gallery__lightbox-image-counter">
-                                    {images.indexOf(selectedImage) + 1}/{images.length}
+                                    {images.findIndex(image => image.name === selectedImage.name) + 1}/{images.length}
                                 </span>
-                                <button className="gallery__lightbox-close button--default--styles" onClick={() => setSelectedImage('')}>
+                                <button className="gallery__lightbox-close button--default--styles" onClick={() => setSelectedImage({ name: '', tags: [] })}>
                                     <FontAwesomeIcon icon={faX} />
                                 </button>
                             </div>
@@ -300,7 +312,7 @@ function App() {
                                 <button className="gallery__lightbox-arrows gallery__lightbox-left-arrow button--default--styles" onClick={handlePreviousImage}>
                                     <FontAwesomeIcon icon={faArrowLeft} />
                                 </button>
-                                <img src={`/${selectedImage}.webp`} alt={selectedImage} className="gallery__lightbox-image" />
+                                <img src={`/${selectedImage.name}.webp`} alt={selectedImage.name} className="gallery__lightbox-image" />
                                 <button className="gallery__lightbox-arrows gallery__lightbox-right-arrow button--default--styles" onClick={handleNextImage}>
                                     <FontAwesomeIcon icon={faArrowRight} />
                                 </button>
