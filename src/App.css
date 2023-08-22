@@ -197,7 +197,6 @@
     .gallery__first-column, .gallery__second-column, .gallery__third-column{
         display: grid;
         gap: 1.25rem;
-        min-height: 100vh;
     }
 
     .gallery__image {
