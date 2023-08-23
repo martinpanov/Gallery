@@ -7,22 +7,23 @@ import { faArrowRight, faArrowLeft, faX, faMagnifyingGlass, faFilter } from '@fo
 interface Images {
     name: string;
     tags: string[];
+    category: string;
 }
 
 function App() {
     const images: Images[] = [
-        { name: 'beach-with-palms', tags: ['beach', 'palms', 'water'] }, { name: 'beach-with-palms2', tags: ['beach', 'palms', 'sand'] },
-        { name: 'beach', tags: ['beach', 'sand', 'water'] }, { name: 'bmw-m2', tags: ['car', 'bmw', 'fast'] },
-        { name: 'audi-r8', tags: ['car', 'audi', 'sport'] }, { name: 'mercedes-gt', tags: ['car', 'mercedes', 'yellow'] },
-        { name: 'forest-fog', tags: ['trees', 'fog', 'beautiful'] }, { name: 'forest-green', tags: ['green', 'trees', 'grass'] },
-        { name: 'forest-lake', tags: ['lake', 'mountain', 'people'] }, { name: 'classy-watch', tags: ['suit', 'classy', 'rolex'] },
-        { name: 'rolex', tags: ['rolex', 'shiny', 'expensive'] }, { name: 'smart-watch', tags: ['smart', 'technology', 'apple'] },
-        { name: 'tissot-watch', tags: ['vintage', 'tissot', 'classy'] }];
+        { name: 'beach-with-palms', tags: ['beach', 'palms', 'water'], category: 'beach' }, { name: 'beach-with-palms2', tags: ['beach', 'palms', 'sand'], category: 'beach' },
+        { name: 'beach', tags: ['beach', 'sand', 'water'], category: 'beach' }, { name: 'bmw-m2', tags: ['car', 'bmw', 'fast'], category: 'car' },
+        { name: 'audi-r8', tags: ['car', 'audi', 'sport'], category: 'car' }, { name: 'mercedes-gt', tags: ['car', 'mercedes', 'yellow'], category: 'car' },
+        { name: 'forest-fog', tags: ['trees', 'fog', 'beautiful'], category: 'forest' }, { name: 'forest-green', tags: ['green', 'trees', 'grass'], category: 'forest' },
+        { name: 'forest-lake', tags: ['lake', 'mountain', 'people'], category: 'forest' }, { name: 'classy-watch', tags: ['suit', 'classy', 'rolex'], category: 'watch' },
+        { name: 'rolex', tags: ['rolex', 'shiny', 'expensive'], category: 'watch' }, { name: 'smart-watch', tags: ['smart', 'technology', 'apple'], category: 'watch' },
+        { name: 'tissot-watch', tags: ['vintage', 'tissot', 'classy'], category: 'watch' }];
 
     const [displayedImages, setDisplayedImages] = useState([...images]);
 
     const [screenSize, setScreenSize] = useState('large');
-    const [selectedImage, setSelectedImage] = useState<Images>({ name: '', tags: [] });
+    const [selectedImage, setSelectedImage] = useState<Images>({ name: '', tags: [], category: '' });
     const [visibleImages, setVisibleImages] = useState<number[]>([]);
     const [isOpenFilterMenu, setIsOpenFilterMenu] = useState(false);
     const [formData, setFormData] = useState({});
@@ -107,7 +108,7 @@ function App() {
         } else if (event.key === "ArrowLeft") {
             handlePreviousImage();
         } else if (event.key === "Escape") {
-            setSelectedImage({ name: '', tags: [] });
+            setSelectedImage({ name: '', tags: [], category: '' });
         }
     };
 
@@ -123,13 +124,16 @@ function App() {
             return setDisplayedImages(images);
         }
 
-        setDisplayedImages(images.filter(image => image.tags.includes(formData.tag)));
+        setDisplayedImages(images.filter(image => image.tags.includes(formData.tag) || Object.values(formData).some(value => value === image.category)));
     };
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
         if (event.target.type === 'checkbox') {
-            return setFormData(prevState => ({ ...prevState, [name]: event.target.checked }));
+            if (event.target.checked === false) {
+                return setFormData(prevState => ({ ...prevState, [name]: '' }));
+            }
+            return setFormData(prevState => ({ ...prevState, [name]: name }));
         }
 
         setFormData(prevState => ({ ...prevState, [name]: value }));
@@ -214,7 +218,7 @@ function App() {
                 <section className='gallery'>
                     {screenSize === 'small' &&
                         <div className='gallery__first-column'>
-                            {images.map((image, index) =>
+                            {displayedImages.map((image, index) =>
                                 <img
                                     key={index}
                                     className={`gallery__image ${visibleImages.includes(index) ? 'active' : ''}`}
@@ -229,34 +233,24 @@ function App() {
                     }
 
                     {screenSize === 'medium' &&
-                        <>
-                            <div className='gallery__first-column'>
-                                {images.slice(0, images.length / 2).map((image, index) =>
-                                    <img
-                                        key={index}
-                                        className={`gallery__image ${visibleImages.includes(index) ? 'active' : ''}`}
-                                        data-index={index}
-                                        ref={el => imagesRef.current[index] = el}
-                                        onClick={() => setSelectedImage(image)}
-                                        src={`/${image.name}.webp`}
-                                        alt={image.name}
-                                    />
+                        ['first', 'second'].map((columnNum, columnIndex) => {
+                            return <div key={columnIndex} className={`gallery__${columnNum}-column`}>
+                                {displayedImages.map((image, index) => {
+                                    if (index % 2 === columnIndex) {
+                                        return <img
+                                            key={index}
+                                            className={`gallery__image ${visibleImages.includes(index) ? 'active' : ''}`}
+                                            data-index={index}
+                                            ref={el => imagesRef.current[index] = el}
+                                            onClick={() => setSelectedImage(image)}
+                                            src={`/${image.name}-small.webp`}
+                                            alt={image.name}
+                                        />;
+                                    }
+                                }
                                 )}
-                            </div>
-                            <div className="gallery__second-column">
-                                {images.slice(images.length / 2, images.length).map((image, index) =>
-                                    <img
-                                        key={index + 7}
-                                        className={`gallery__image ${visibleImages.includes(index + 7) ? 'active' : ''}`}
-                                        data-index={index + 7}
-                                        ref={el => imagesRef.current[index + 7] = el}
-                                        onClick={() => setSelectedImage(image)}
-                                        src={`/${image.name}.webp`}
-                                        alt={image.name}
-                                    />
-                                )}
-                            </div>
-                        </>
+                            </div>;
+                        })
                     }
 
                     {screenSize === 'large' &&
@@ -279,9 +273,9 @@ function App() {
 
                             {displayedImages.length === 2 &&
                                 ['first', 'second'].map((columnNum, columnIndex) => {
-                                    return <div className={`gallery__${columnNum}-column`}>
+                                    return <div key={columnIndex} className={`gallery__${columnNum}-column`}>
                                         {displayedImages.map((image, index) => {
-                                            if (index % 3 === columnIndex) {
+                                            if (index % 2 === columnIndex) {
                                                 return <img
                                                     key={index}
                                                     className={`gallery__image ${visibleImages.includes(index) ? 'active' : ''}`}
@@ -300,7 +294,7 @@ function App() {
 
                             {displayedImages.length >= 3 &&
                                 ['first', 'second', 'third'].map((columnNum, columnIndex) => {
-                                    return <div className={`gallery__${columnNum}-column`}>
+                                    return <div key={columnIndex} className={`gallery__${columnNum}-column`}>
                                         {displayedImages.map((image, index) => {
                                             if (index % 3 === columnIndex) {
                                                 return <img
@@ -328,7 +322,7 @@ function App() {
                                 <span className="gallery__lightbox-image-counter">
                                     {displayedImages.findIndex(image => image.name === selectedImage.name) + 1}/{displayedImages.length}
                                 </span>
-                                <button className="gallery__lightbox-close button--default--styles" onClick={() => setSelectedImage({ name: '', tags: [] })}>
+                                <button className="gallery__lightbox-close button--default--styles" onClick={() => setSelectedImage({ name: '', tags: [], category: '' })}>
                                     <FontAwesomeIcon icon={faX} />
                                 </button>
                             </div>
