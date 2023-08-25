@@ -33,7 +33,7 @@ function App() {
         watch: ''
     });
 
-    const imagesRef = useRef<(HTMLImageElement | null)[]>([]);
+    const imagesRef = useRef<(HTMLDivElement | null)[]>([]);
 
     useEffect(() => {
         handleResize();
@@ -114,15 +114,25 @@ function App() {
                             return <div key={columnIndex} className={`gallery__${columnNum}-column`}>
                                 {displayedImages.map((image, index) => {
                                     if (index % 2 === columnIndex) {
-                                        return <img
-                                            key={index}
-                                            className={`gallery__image ${visibleImages.includes(index) ? 'active' : ''}`}
-                                            data-index={index}
-                                            ref={el => imagesRef.current[index] = el}
-                                            onClick={() => setSelectedImage(image)}
-                                            src={`/${image.name}-small.webp`}
-                                            alt={image.name}
-                                        />;
+                                        return <div className='gallery__image-container'>
+                                            <div className='gallery__image-info'>
+                                                <h3>Tags</h3>
+                                                <ul>
+                                                    <li>{image.tags[0]}</li>
+                                                    <li>{image.tags[1]}</li>
+                                                    <li>{image.tags[2]}</li>
+                                                </ul>
+                                            </div>
+                                            <img
+                                                key={index}
+                                                className={`gallery__image ${visibleImages.includes(index) ? 'active' : ''}`}
+                                                data-index={index}
+                                                ref={el => imagesRef.current[index] = el}
+                                                onClick={() => setSelectedImage(image)}
+                                                src={`/${image.name}-small.webp`}
+                                                alt={image.name}
+                                            />;
+                                        </div>;
                                     }
                                 }
                                 )}
@@ -174,15 +184,27 @@ function App() {
                                     return <div key={columnIndex} className={`gallery__${columnNum}-column`}>
                                         {displayedImages.map((image, index) => {
                                             if (index % 3 === columnIndex) {
-                                                return <img
+                                                return <div
                                                     key={index}
-                                                    className={`gallery__image ${visibleImages.includes(index) ? 'active' : ''}`}
+                                                    className={`gallery__image-container ${visibleImages.includes(index) ? 'active' : ''}`}
                                                     data-index={index}
                                                     ref={el => imagesRef.current[index] = el}
                                                     onClick={() => setSelectedImage(image)}
-                                                    src={`/${image.name}-small.webp`}
-                                                    alt={image.name}
-                                                />;
+                                                >
+                                                    <div className='gallery__image-info'>
+                                                        <h3 className='gallery__image-heading'>Tags</h3>
+                                                        <ul role='list' className='gallery__list-items'>
+                                                            <li>{image.tags[0]}</li>
+                                                            <li>{image.tags[1]}</li>
+                                                            <li>{image.tags[2]}</li>
+                                                        </ul>
+                                                    </div>
+                                                    <img
+                                                        className='gallery__image'
+                                                        src={`/${image.name}.webp`}
+                                                        alt={image.name}
+                                                    />
+                                                </div>;
                                             }
                                         }
                                         )}

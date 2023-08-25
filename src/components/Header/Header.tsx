@@ -28,7 +28,6 @@ export default function Header({ images, formData, setFormData, setDisplayedImag
     const [isInputFocused, setisInputFocused] = useState(false);
     const [isOpenFilterMenu, setIsOpenFilterMenu] = useState(false);
 
-
     const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formDataObjectValues = Object.values(formData).every(value => value === '');
@@ -37,6 +36,7 @@ export default function Header({ images, formData, setFormData, setDisplayedImag
             return setDisplayedImages(images);
         }
 
+        setIsOpenFilterMenu(false);
         setDisplayedImages(images.filter(image => image.tags.includes(formData.tag) || Object.values(formData).some(value => value === image.category)));
     };
 
@@ -50,11 +50,6 @@ export default function Header({ images, formData, setFormData, setDisplayedImag
         }
 
         setFormData(prevState => ({ ...prevState, [name]: value }));
-    };
-
-
-    const openFilterMenu = () => {
-        setIsOpenFilterMenu(prevState => !prevState);
     };
 
     return (
@@ -78,13 +73,11 @@ export default function Header({ images, formData, setFormData, setDisplayedImag
                         onClick={() => setisInputFocused(true)}
                         onBlur={() => setisInputFocused(false)}
                     />
-                    <button className='header__filter button--default--styles'>
-                        <FontAwesomeIcon
-                            icon={faFilter}
-                            className='header__filter'
-                            onClick={() => openFilterMenu()}
-                        />
-                    </button>
+                    <FontAwesomeIcon
+                        icon={faFilter}
+                        className='header__filter'
+                        onClick={() => setIsOpenFilterMenu(prevState => !prevState)}
+                    />
                     {isOpenFilterMenu &&
                         <div className='header__filter-menu'>
                             <h3>Filter options</h3>

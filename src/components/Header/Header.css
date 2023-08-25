@@ -29,6 +29,7 @@
 
 .header__form.active {
     background-color: var(--color-white);
+    border: 1px solid var(--color-light-grey);
 }
 
 .header__form-buton {
@@ -96,5 +97,9 @@
 
     .header__form:hover {
         border: 1px solid var(--color-light-grey);
+    }
+
+    .header__filter {
+        cursor: pointer;
     }
 }
