@@ -96,15 +96,27 @@ function App() {
                     {screenSize === 'small' &&
                         <div className='gallery__first-column'>
                             {displayedImages.map((image, index) =>
-                                <img
+                                <div
                                     key={index}
-                                    className={`gallery__image ${visibleImages.includes(index) ? 'active' : ''}`}
+                                    className={`gallery__image-container ${visibleImages.includes(index) ? 'active' : ''}`}
                                     data-index={index}
                                     ref={el => imagesRef.current[index] = el}
                                     onClick={() => setSelectedImage(image)}
-                                    src={`/${image.name}.webp`}
-                                    alt={image.name}
-                                />
+                                >
+                                    <div className='gallery__image-info'>
+                                        <h3 className='gallery__image-heading'>Tags</h3>
+                                        <ul role='list' className='gallery__list-items'>
+                                            <li>{image.tags[0]}</li>
+                                            <li>{image.tags[1]}</li>
+                                            <li>{image.tags[2]}</li>
+                                        </ul>
+                                    </div>
+                                    <img
+                                        className='gallery__image'
+                                        src={`/${image.name}.webp`}
+                                        alt={image.name}
+                                    />
+                                </div>
                             )}
                         </div>
                     }
@@ -114,28 +126,30 @@ function App() {
                             return <div key={columnIndex} className={`gallery__${columnNum}-column`}>
                                 {displayedImages.map((image, index) => {
                                     if (index % 2 === columnIndex) {
-                                        return <div className='gallery__image-container'>
+                                        return <div
+                                            key={index}
+                                            className={`gallery__image-container ${visibleImages.includes(index) ? 'active' : ''}`}
+                                            data-index={index}
+                                            ref={el => imagesRef.current[index] = el}
+                                            onClick={() => setSelectedImage(image)}
+                                        >
                                             <div className='gallery__image-info'>
-                                                <h3>Tags</h3>
-                                                <ul>
+                                                <h3 className='gallery__image-heading'>Tags</h3>
+                                                <ul role='list' className='gallery__list-items'>
                                                     <li>{image.tags[0]}</li>
                                                     <li>{image.tags[1]}</li>
                                                     <li>{image.tags[2]}</li>
                                                 </ul>
                                             </div>
                                             <img
-                                                key={index}
-                                                className={`gallery__image ${visibleImages.includes(index) ? 'active' : ''}`}
-                                                data-index={index}
-                                                ref={el => imagesRef.current[index] = el}
-                                                onClick={() => setSelectedImage(image)}
-                                                src={`/${image.name}-small.webp`}
+                                                className='gallery__image'
+                                                src={`/${image.name}.webp`}
                                                 alt={image.name}
-                                            />;
+                                            />
                                         </div>;
                                     }
+                                })
                                 }
-                                )}
                             </div>;
                         })
                     }
@@ -144,41 +158,60 @@ function App() {
                         <>
                             {displayedImages.length === 1 &&
                                 <div className='gallery__first-column'>
-                                    {displayedImages.map((image, index) =>
+                                    <div
+                                        className={`gallery__image-container ${visibleImages.includes(0) ? 'active' : ''}`}
+                                        data-index={0}
+                                        ref={el => imagesRef.current[0] = el}
+                                        onClick={() => setSelectedImage(displayedImages[0])}
+                                    >
+                                        <div className='gallery__image-info'>
+                                            <h3 className='gallery__image-heading'>Tags</h3>
+                                            <ul role='list' className='gallery__list-items'>
+                                                <li>{displayedImages[0].tags[0]}</li>
+                                                <li>{displayedImages[0].tags[1]}</li>
+                                                <li>{displayedImages[0].tags[2]}</li>
+                                            </ul>
+                                        </div>
                                         <img
-                                            key={index}
-                                            className={`gallery__image ${visibleImages.includes(index) ? 'active' : ''}`}
-                                            data-index={index}
-                                            ref={el => imagesRef.current[index] = el}
-                                            onClick={() => setSelectedImage(image)}
-                                            src={`/${image.name}-small.webp`}
-                                            alt={image.name}
+                                            className='gallery__image'
+                                            src={`/${displayedImages[0].name}-small.webp`}
+                                            alt={displayedImages[0].name}
                                         />
-                                    )}
+                                    </div>
                                 </div>
                             }
-
                             {displayedImages.length === 2 &&
                                 ['first', 'second'].map((columnNum, columnIndex) => {
                                     return <div key={columnIndex} className={`gallery__${columnNum}-column`}>
                                         {displayedImages.map((image, index) => {
                                             if (index % 2 === columnIndex) {
-                                                return <img
+                                                return <div
                                                     key={index}
-                                                    className={`gallery__image ${visibleImages.includes(index) ? 'active' : ''}`}
+                                                    className={`gallery__image-container ${visibleImages.includes(index) ? 'active' : ''}`}
                                                     data-index={index}
                                                     ref={el => imagesRef.current[index] = el}
                                                     onClick={() => setSelectedImage(image)}
-                                                    src={`/${image.name}-small.webp`}
-                                                    alt={image.name}
-                                                />;
+                                                >
+                                                    <div className='gallery__image-info'>
+                                                        <h3 className='gallery__image-heading'>Tags</h3>
+                                                        <ul role='list' className='gallery__list-items'>
+                                                            <li>{image.tags[0]}</li>
+                                                            <li>{image.tags[1]}</li>
+                                                            <li>{image.tags[2]}</li>
+                                                        </ul>
+                                                    </div>
+                                                    <img
+                                                        className='gallery__image'
+                                                        src={`/${image.name}-small.webp`}
+                                                        alt={image.name}
+                                                    />;
+                                                </div>;
                                             }
                                         }
                                         )}
                                     </div>;
                                 })
                             }
-
                             {displayedImages.length >= 3 &&
                                 ['first', 'second', 'third'].map((columnNum, columnIndex) => {
                                     return <div key={columnIndex} className={`gallery__${columnNum}-column`}>

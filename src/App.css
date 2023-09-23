@@ -14,14 +14,43 @@
     gap: 1.25rem;
 }
 
+.gallery__image-container::before {
+    position: absolute;
+    content: '';
+    height: 100%;
+    width: 100%;
+    background-color: var(--color-black);
+    opacity: 0.2;
+    z-index: 10;
+}
+
 .gallery__image-container {
+    position: relative;
     min-height: 350px;
+    border-radius: 0.5rem;
     opacity: 0;
     transition: all 1.2s;
+    overflow: hidden;
+    cursor: pointer;
 }
 
 .gallery__image-container.active {
     opacity: 1;
+}
+
+.gallery__image-info {
+    position: absolute;
+    bottom: 0;
+    z-index: 20;
+    color: var(--color-white);
+    padding: 1.5rem;
+}
+
+.gallery__list-items {
+    display: flex;
+    gap: 0.5rem;
+    text-transform: uppercase;
+    font-size: 0.95rem;
 }
 
 .gallery__image {
@@ -48,42 +77,14 @@
         padding: 0rem;
     }
 
-    .gallery__first-column, .gallery__second-column, .gallery__third-column{
+    .gallery__first-column, .gallery__second-column, .gallery__third-column {
         display: grid;
         gap: 1.25rem;
     }
 
-    .gallery__image-container {
-        position: relative;
-        border-radius: 0.5rem;
-        overflow: hidden;
-        cursor: pointer;
-    }
-
-    .gallery__image-container::before {
-        position: absolute;
-        content: '';
-        height: 100%;
-        width: 100%;
-        background-color: var(--color-black);
-        opacity: 0.2;
-        z-index: 10;
-        transition: all 0.4s;
-    }
-
     .gallery__image-container:hover::before {
         opacity: 0.1;
-    }
-
-    .gallery__image-info {
-        position: absolute;
-        bottom: 0;
-        z-index: 20;
-        color: var(--color-white);
-        opacity: 0;
-        transform: translateY(0.75rem);
         transition: all 0.4s;
-        padding: 1.5rem;
     }
 
     .gallery__image-container:hover .gallery__image-info {
@@ -95,11 +96,10 @@
         font-size: 1.75rem;
     }
 
-    .gallery__list-items {
-        display: flex;
-        gap: 0.5rem;
-        text-transform: uppercase;
-        font-size: 0.95rem;
+    .gallery__image-info {
+        opacity: 0;
+        transform: translateY(0.75rem);
+        transition: all 0.4s;
     }
 
     .gallery__image {
