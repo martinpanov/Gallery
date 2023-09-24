@@ -2,6 +2,7 @@ import { faFilter, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import './Header.css';
+import useClickOutside from "../../hooks/useClickOutside";
 
 interface Images {
     name: string;
@@ -25,13 +26,16 @@ interface HeaderProps {
 }
 
 export default function Header({ images, formData, setFormData, setDisplayedImages }: HeaderProps) {
+    const dropDownMenuRef = useClickOutside(() => {
+        setIsOpenFilterMenu(false);
+    });
+
     const [isInputFocused, setisInputFocused] = useState(false);
     const [isOpenFilterMenu, setIsOpenFilterMenu] = useState(false);
 
     const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formDataObjectValues = Object.values(formData).every(value => value === '');
-
         if (formDataObjectValues) {
             return setDisplayedImages(images);
         }
@@ -49,7 +53,7 @@ export default function Header({ images, formData, setFormData, setDisplayedImag
             return setFormData(prevState => ({ ...prevState, [name]: name }));
         }
 
-        setFormData(prevState => ({ ...prevState, [name]: value }));
+        setFormData(prevState => ({ ...prevState, [name]: value.toLowerCase() }));
     };
 
     return (
@@ -79,22 +83,22 @@ export default function Header({ images, formData, setFormData, setDisplayedImag
                         onClick={() => setIsOpenFilterMenu(prevState => !prevState)}
                     />
                     {isOpenFilterMenu &&
-                        <div className='header__filter-menu'>
+                        <div className='header__filter-menu' ref={dropDownMenuRef}>
                             <h3>Filter options</h3>
                             <div>
-                                <input type="checkbox" name="car" id="car" onChange={handleChange} />
+                                <input checked={formData.car === 'car' ? true : false} type="checkbox" name="car" id="car" onChange={handleChange} />
                                 <label htmlFor="car">Car</label>
                             </div>
                             <div>
-                                <input type="checkbox" name="forest" id="forest" onChange={handleChange} />
+                                <input checked={formData.forest === 'forest' ? true : false} type="checkbox" name="forest" id="forest" onChange={handleChange} />
                                 <label htmlFor="forest">Forest</label>
                             </div>
                             <div>
-                                <input type="checkbox" name="beach" id="beach" onChange={handleChange} />
+                                <input checked={formData.beach === 'beach' ? true : false} type="checkbox" name="beach" id="beach" onChange={handleChange} />
                                 <label htmlFor="beach">Beach</label>
                             </div>
                             <div>
-                                <input type="checkbox" name="watch" id="watch" onChange={handleChange} />
+                                <input checked={formData.watch === 'watch' ? true : false} type="checkbox" name="watch" id="watch" onChange={handleChange} />
                                 <label htmlFor="watch">Watch</label>
                             </div>
                         </div>

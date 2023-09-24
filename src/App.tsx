@@ -3,6 +3,7 @@ import './App.css';
 import './variables.css';
 import Header from './components/Header/Header';
 import Lightbox from './components/Lightbox/Lightbox';
+import useIntersectionObserver from './hooks/useIntersectionObserver';
 
 interface Images {
     name: string;
@@ -17,14 +18,13 @@ function App() {
         { name: 'audi-r8', tags: ['car', 'audi', 'sport'], category: 'car' }, { name: 'mercedes-gt', tags: ['car', 'mercedes', 'yellow'], category: 'car' },
         { name: 'forest-fog', tags: ['trees', 'fog', 'beautiful'], category: 'forest' }, { name: 'forest-green', tags: ['green', 'trees', 'grass'], category: 'forest' },
         { name: 'forest-lake', tags: ['lake', 'mountain', 'people'], category: 'forest' }, { name: 'classy-watch', tags: ['suit', 'classy', 'rolex'], category: 'watch' },
-        { name: 'rolex', tags: ['rolex', 'shiny', 'expensive'], category: 'watch' }, { name: 'smart-watch', tags: ['smart', 'technology', 'apple'], category: 'watch' },
-        { name: 'tissot-watch', tags: ['vintage', 'tissot', 'classy'], category: 'watch' }];
+        { name: 'tissot-watch', tags: ['vintage', 'tissot', 'classy'], category: 'watch' }, { name: 'rolex', tags: ['rolex', 'shiny', 'expensive'], category: 'watch' },
+        { name: 'smart-watch', tags: ['smart', 'technology', 'apple'], category: 'watch' }];
 
     const [displayedImages, setDisplayedImages] = useState([...images]);
 
     const [screenSize, setScreenSize] = useState('large');
     const [selectedImage, setSelectedImage] = useState<Images>({ name: '', tags: [], category: '' });
-    const [visibleImages, setVisibleImages] = useState<number[]>([]);
     const [formData, setFormData] = useState({
         tag: '',
         car: '',
@@ -34,6 +34,7 @@ function App() {
     });
 
     const imagesRef = useRef<(HTMLDivElement | null)[]>([]);
+    const visibleImages = useIntersectionObserver({ imagesRef, screenSize, displayedImages });
 
     useEffect(() => {
         handleResize();
@@ -44,32 +45,6 @@ function App() {
         };
     }, []);
 
-    useEffect(() => {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const imageIndex = parseInt(entry.target.getAttribute('data-index') || '0', 10);
-                    if (!visibleImages.includes(imageIndex)) {
-                        setVisibleImages(prevVisibleImages => [...prevVisibleImages, imageIndex]);
-                    }
-                }
-            });
-        }, { threshold: 0.4 });
-
-        imagesRef.current.forEach((ref) => {
-            if (ref) {
-                observer.observe(ref);
-            }
-        });
-
-        return () => {
-            imagesRef.current.forEach((ref) => {
-                if (ref) {
-                    observer.unobserve(ref);
-                }
-            });
-        };
-    }, [screenSize, displayedImages]);
 
     const handleResize = () => {
         const width = window.innerWidth;
