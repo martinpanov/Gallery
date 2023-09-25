@@ -4,9 +4,9 @@
 
 My App is a single-page application built with React that allows users to go through a list of images. Whenever you click on one of the images, a lightbox popup will appear displaying the image that you clicked on. Each of the images has a tags and category and you have the ability to filter the images based on their tags or category. 
 
-### The link to the website is https://begachka.donttouchmydomain.com
+### The link to the website is https://martinp70.sg-host.com/
 
-![Cars](https://user-images.githubusercontent.com/106311309/230741582-e7f9954e-e37f-45d2-adcf-debcf9d6e8a4.jpg)
+<img width="950" alt="gallery" src="https://github.com/martinpanov/Gallery/assets/106311309/2aa104d1-02a9-47fd-b87c-8e84444d6714">
 
 ## Technology Stack
 
